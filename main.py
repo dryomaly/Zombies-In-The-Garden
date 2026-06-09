@@ -31,7 +31,7 @@ def main():
     model         = None
     settings      = {"music": True, "sounds": True, "show_grid": True}
 
-    sound_manager.try_play_music()
+    # Музыка НЕ запускается в меню — только при входе в уровень
 
     running = True
     while running:
@@ -66,14 +66,18 @@ def main():
                 current_level = int(result.split("_")[1])
                 model = GameModel(current_level)
                 state = "playing"
+                sound_manager.try_play_music()   # музыка стартует при входе в уровень
 
         elif state == "settings":
             result = draw_settings(screen, events, settings)
             if result == "back":
                 state = "menu"
-            # Применяем настройки звука
-            sound_manager.set_sfx(settings.get("sounds", True))
-            sound_manager.set_music(settings.get("music", True))
+            # Применяем настройки звука — только флаги, музыку не запускаем
+            # (музыка стартует исключительно при входе в уровень)
+            sound_manager.sfx_on   = settings.get("sounds", True)
+            sound_manager.music_on = settings.get("music", True)
+            if not sound_manager.music_on:
+                sound_manager.stop_music()
 
         elif state == "playing":
             if model is None:
@@ -100,6 +104,7 @@ def main():
                 elif pause_result == "menu":
                     model = None
                     state = "menu"
+                    sound_manager.stop_music()   # музыка останавливается при выходе в меню через паузу
                     continue
 
             if model.state == "game_over": state = "game_over"
@@ -111,9 +116,11 @@ def main():
             if result == "retry":
                 model = GameModel(current_level)
                 state = "playing"
+                sound_manager.try_play_music()   # музыка стартует при повторе уровня
             elif result == "menu":
                 model = None
                 state = "menu"
+                sound_manager.stop_music()       # музыка останавливается при выходе в меню
 
         elif state == "win":
             if model: renderer.draw(screen, model)
@@ -124,9 +131,11 @@ def main():
                 current_level += 1
                 model = GameModel(current_level)
                 state = "playing"
+                sound_manager.try_play_music()   # музыка стартует при переходе на следующий уровень
             elif result == "menu":
                 model = None
                 state = "menu"
+                sound_manager.stop_music()       # музыка останавливается при выходе в меню
 
         pygame.display.flip()
 
