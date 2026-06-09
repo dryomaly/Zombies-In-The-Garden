@@ -68,11 +68,7 @@ pvz/
 | Алгоритм | Файл |
 |---|---|
 | Game Loop + deltaTime | main.py |
-| FSM зомби (Walking→Dying→Dead) | model/zombie.py |
-| AABB коллизия снаряд↔зомби | model/projectile.py |
 | Обход пути зомби по waypoints | model/tile_map.py |
-| A* поиск пути | model/pathfinder.py |
-| Пространственное хеширование | model/spatial_grid.py |
 | Взвешенный случайный выбор | model/wave_manager.py |
 
 ## Типы растений
