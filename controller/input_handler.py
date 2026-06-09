@@ -1,12 +1,11 @@
-# controller/input_handler.py — обработка ввода (слой Controller в MVC)
-# P-пауза обрабатывается в main.py, чтобы не было двойного срабатывания.
+# обработка ввода
 
 import pygame
 from settings import SHOP_Y, SHOP_H, GRID_Y, PEASHOOTER, BOXER, MACHINEGUN
 from controller.hotkeys import is_escape, is_peashooter, is_boxer, is_machinegun
 
-PLANT_TYPES  = [PEASHOOTER, BOXER, MACHINEGUN]
-SHOP_CARD_W  = 130
+PLANT_TYPES = [PEASHOOTER, BOXER, MACHINEGUN]
+SHOP_CARD_W = 130
 
 
 class InputHandler:
@@ -15,7 +14,6 @@ class InputHandler:
             if event.type == pygame.KEYDOWN:
                 self._handle_key(event, model)
             elif event.type == pygame.MOUSEBUTTONDOWN and not model.paused:
-                # Клики мышью игнорируются на паузе
                 if event.button == 1:
                     self._handle_left_click(event.pos, model)
                 elif event.button == 3:
@@ -31,7 +29,6 @@ class InputHandler:
             model.select_plant(BOXER)
         elif is_machinegun(event):
             model.select_plant(MACHINEGUN)
-        # P — пауза обрабатывается в main.py
 
     def _handle_left_click(self, pos, model):
         mx, my = pos
@@ -44,7 +41,7 @@ class InputHandler:
 
     def _click_shop(self, mx, model):
         for i, ptype in enumerate(PLANT_TYPES):
-            cx = 10 + i*(SHOP_CARD_W+10)
+            cx = 10 + i * (SHOP_CARD_W + 10)
             if cx <= mx <= cx + SHOP_CARD_W:
                 model.select_plant(ptype)
                 return

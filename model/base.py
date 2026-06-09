@@ -1,4 +1,4 @@
-# model/base.py — база растений (цель зомби)
+# база растений
 
 from settings import BASE_MAX_HP
 
@@ -10,7 +10,7 @@ class Base:
     """
 
     def __init__(self, pos):
-        self.pos = pos           # (col, row) на сетке
+        self.pos = pos
         self.max_hp = BASE_MAX_HP
         self.hp = BASE_MAX_HP
 

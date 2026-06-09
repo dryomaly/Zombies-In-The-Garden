@@ -1,31 +1,17 @@
-# view/sound_manager.py — звуковые эффекты из .wav-файлов
-#
-# Структура папки assets/sounds/ рядом с main.py:
-#
-#   assets/
-#     sounds/
-#       sfx/
-#         pea_shoot.wav
-#         gun_shoot.wav
-#         punch.wav
-#         zombie_die.wav
-#         base_hit.wav
-#         plant_place.wav
-#       music/
-#         background.wav
+# Класс со звуками игры
 
 import pygame
 import os
 
-_SFX_DIR   = os.path.join("assets", "sounds", "sfx")
+_SFX_DIR = os.path.join("assets", "sounds", "sfx")
 _MUSIC_DIR = os.path.join("assets", "sounds", "music")
 
 _SFX_FILES = {
-    "pea_shoot":   "pea_shoot.wav",
-    "gun_shoot":   "gun_shoot.wav",
-    "punch":       "punch.wav",
-    "zombie_die":  "zombie_die.wav",
-    "base_hit":    "base_hit.wav",
+    "pea_shoot": "pea_shoot.wav",
+    "gun_shoot": "gun_shoot.wav",
+    "punch": "punch.wav",
+    "zombie_die": "zombie_die.wav",
+    "base_hit": "base_hit.wav",
     "plant_place": "plant_place.wav",
 }
 
@@ -34,9 +20,9 @@ _MUSIC_PATH = os.path.join(_MUSIC_DIR, "background.mp3")
 
 class SoundManager:
     def __init__(self, sfx_on=True, music_on=True):
-        self.sfx_on   = sfx_on
+        self.sfx_on = sfx_on
         self.music_on = music_on
-        self.sounds   = {}
+        self.sounds = {}
 
         if not pygame.mixer.get_init():
             pygame.mixer.init(44100, -16, 2, 512)

@@ -1,8 +1,8 @@
-# controller/hotkeys.py — хоткеи по физическим клавишам (работают на любой раскладке)
+# хоткеи (работают на любой раскладке)
 
 import pygame
 
-# SDL scancodes для QWERTY-позиций
+# сканкоды для QWERTY
 _SC_Q = 20
 _SC_W = 26
 _SC_E = 8
@@ -23,16 +23,16 @@ def is_escape(event):
 
 
 def is_peashooter(event):
-    return _pressed(event, _SC_Q, pygame.K_q, ord('q'), ord('Q'), ord('й'), ord('Й'))
+    return _pressed(event, _SC_Q, pygame.K_q, ord("q"), ord("Q"), ord("й"), ord("Й"))
 
 
 def is_boxer(event):
-    return _pressed(event, _SC_W, pygame.K_w, ord('w'), ord('W'), ord('ц'), ord('Ц'))
+    return _pressed(event, _SC_W, pygame.K_w, ord("w"), ord("W"), ord("ц"), ord("Ц"))
 
 
 def is_machinegun(event):
-    return _pressed(event, _SC_E, pygame.K_e, ord('e'), ord('E'), ord('у'), ord('У'))
+    return _pressed(event, _SC_E, pygame.K_e, ord("e"), ord("E"), ord("у"), ord("У"))
 
 
 def is_pause(event):
-    return _pressed(event, _SC_P, pygame.K_p, ord('p'), ord('P'), ord('з'), ord('З'))
+    return _pressed(event, _SC_P, pygame.K_p, ord("p"), ord("P"), ord("з"), ord("З"))
