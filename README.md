@@ -65,15 +65,15 @@ pvz/
 
 ## Алгоритмы
 
-| Алгоритм | Файл | Сложность |
-|---|---|---|
-| Game Loop + deltaTime | main.py | Лёгкий |
-| FSM зомби (Walking→Dying→Dead) | model/zombie.py | Лёгкий |
-| AABB коллизия снаряд↔зомби | model/projectile.py | Лёгкий |
-| Обход пути зомби по waypoints | model/tile_map.py | Лёгкий |
-| A* поиск пути | model/pathfinder.py | Средний |
-| Пространственное хеширование | model/spatial_grid.py | Средний |
-| Взвешенный случайный выбор | model/wave_manager.py | Средний |
+| Алгоритм | Файл |
+|---|---|
+| Game Loop + deltaTime | main.py |
+| FSM зомби (Walking→Dying→Dead) | model/zombie.py |
+| AABB коллизия снаряд↔зомби | model/projectile.py |
+| Обход пути зомби по waypoints | model/tile_map.py |
+| A* поиск пути | model/pathfinder.py |
+| Пространственное хеширование | model/spatial_grid.py |
+| Взвешенный случайный выбор | model/wave_manager.py |
 
 ## Типы растений
 
