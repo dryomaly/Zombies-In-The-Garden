@@ -1,77 +1,92 @@
-# view/sound_manager.py — звуковые эффекты, генерируются программно
+# view/sound_manager.py — звуковые эффекты из .wav-файлов
 #
-# Не требует внешних аудио-файлов: все звуки создаются математически
-# через синусоиды и огибающие. Если нужна музыка — положи файл
-# sounds/music.ogg (или .mp3 / .wav) рядом с main.py.
+# Ожидаемая структура папки assets/sounds/ рядом с main.py:
+#
+#   assets/
+#     sounds/
+#       sfx/
+#         pea_shoot.wav      — выстрел горошиной
+#         gun_shoot.wav      — очередь пулемёта
+#         punch.wav          — удар боксёра
+#         zombie_die.wav     — смерть зомби
+#         base_hit.wav       — удар по базе
+#         plant_place.wav    — постановка растения
+#       music/
+#         background.wav     — фоновая музыка (также поддерживается .ogg/.mp3)
+#
+# TODO (твоя очередь):
+#   1. Создай папки  assets/sounds/sfx/  и  assets/sounds/music/  рядом с main.py
+#   2. Положи туда .wav-файлы с именами, перечисленными выше
+#   3. Если файл отсутствует — звук тихо пропускается, игра не падает
 
 import pygame
-import math
-import array
 import os
 
 
-def _gen(freq, ms, vol=0.35, wave='sine', rate=44100):
-    """
-    Генерирует стерео 16-bit звук заданной частоты и длительности.
-    wave: 'sine' | 'square' | 'descend'
-    """
-    n = int(rate * ms / 1000)
-    data = []
-    for i in range(n):
-        t = i / rate
-        progress = i / n if n > 0 else 0
+# Путь до папки со звуками — относительно рабочей директории (там, где main.py)
+_SOUNDS_ROOT = os.path.join("assets", "sounds")
+_SFX_DIR     = os.path.join(_SOUNDS_ROOT, "sfx")
+_MUSIC_DIR   = os.path.join(_SOUNDS_ROOT, "music")
 
-        # Огибающая: быстрая атака, линейное затухание
-        attack  = min(1.0, t * 80)
-        sustain = max(0.0, 1.0 - progress * 1.3)
-        env = attack * sustain
+# Имена файлов для каждого звукового события (без расширения)
+_SFX_FILES = {
+    "pea_shoot":  "pea_shoot.wav",
+    "gun_shoot":  "gun_shoot.wav",
+    "punch":      "punch.wav",
+    "zombie_die": "zombie_die.wav",
+    "base_hit":   "base_hit.wav",
+    "plant_place": "plant_place.wav",
+}
 
-        if wave == 'square':
-            raw = 1.0 if math.sin(2 * math.pi * freq * t) >= 0 else -1.0
-        elif wave == 'descend':
-            f = freq * (1.0 - progress * 0.6)   # частота падает
-            raw = math.sin(2 * math.pi * f * t)
-        else:
-            raw = math.sin(2 * math.pi * freq * t)
-
-        v = int(raw * env * vol * 32767)
-        v = max(-32768, min(32767, v))
-        data.append(v)   # left
-        data.append(v)   # right (стерео)
-
-    buf = array.array('h', data)
-    return pygame.mixer.Sound(buffer=buf)
+# Фоновая музыка — пробуем несколько форматов по порядку
+_MUSIC_FILES = (
+    os.path.join(_MUSIC_DIR, "background.wav"),
+    os.path.join(_MUSIC_DIR, "background.ogg"),
+    os.path.join(_MUSIC_DIR, "background.mp3"),
+)
 
 
 class SoundManager:
     """
-    Управляет звуковыми эффектами.
-    Все звуки генерируются в __init__ — никаких файлов не нужно.
+    Управляет звуковыми эффектами и музыкой.
+    Звуки загружаются из файлов .wav в папке assets/sounds/sfx/.
     """
 
     def __init__(self, sfx_on=True, music_on=True):
         self.sfx_on   = sfx_on
         self.music_on = music_on
-        self.sounds   = {}
+        self.sounds   = {}   # {event_name: pygame.mixer.Sound}
         self._ok      = False
 
         try:
             if not pygame.mixer.get_init():
                 pygame.mixer.init(44100, -16, 2, 512)
-            self._build_sounds()
+            self._load_sounds()
             self._ok = True
         except Exception as ex:
             print(f"[SoundManager] ошибка инициализации: {ex}")
 
-    def _build_sounds(self):
-        s = self.sounds
-        s['pea_shoot']  = _gen(680,  80,  0.28)            # высокий «pew»
-        s['gun_shoot']  = _gen(340,  55,  0.22)            # короткий «pop»
-        s['punch']      = _gen(160, 110,  0.42, 'square')  # тупой удар
-        s['zombie_die'] = _gen(360, 220,  0.32, 'descend') # нисходящий стон
-        s['base_hit']   = _gen(90,  280,  0.50, 'square')  # низкий гулкий удар
+    # ------------------------------------------------------------------
+    def _load_sounds(self):
+        """
+        Загружает все .wav-файлы из _SFX_DIR по словарю _SFX_FILES.
+        Отсутствующие файлы тихо пропускаются.
+        """
+        for event_name, filename in _SFX_FILES.items():
+            path = os.path.join(_SFX_DIR, filename)
+            if os.path.isfile(path):
+                try:
+                    self.sounds[event_name] = pygame.mixer.Sound(path)
+                    print(f"[SoundManager] загружен: {path}")
+                except Exception as ex:
+                    print(f"[SoundManager] не удалось загрузить {path}: {ex}")
+            else:
+                # TODO (твоя очередь): положи файл  {path}  чтобы этот звук работал
+                print(f"[SoundManager] файл не найден, звук '{event_name}' отключён: {path}")
 
-    def play(self, name):
+    # ------------------------------------------------------------------
+    def play(self, name: str):
+        """Воспроизводит звук по имени события (ключ из _SFX_FILES)."""
         if not self.sfx_on or not self._ok:
             return
         snd = self.sounds.get(name)
@@ -79,23 +94,24 @@ class SoundManager:
             snd.play()
 
     # ------------------------------------------------------------------
-    # Фоновая музыка — нужен файл sounds/music.ogg (или .mp3 / .wav)
+    # Фоновая музыка
     # ------------------------------------------------------------------
 
     def try_play_music(self):
         if not self.music_on or not self._ok:
             return
-        for name in ('sounds/music.ogg', 'sounds/music.mp3', 'sounds/music.wav'):
-            if os.path.exists(name):
+        for path in _MUSIC_FILES:
+            if os.path.isfile(path):
                 try:
-                    pygame.mixer.music.load(name)
+                    pygame.mixer.music.load(path)
                     pygame.mixer.music.set_volume(0.38)
                     pygame.mixer.music.play(-1)
-                    print(f"[Music] играет {name}")
+                    print(f"[Music] играет: {path}")
                 except Exception as ex:
-                    print(f"[Music] не удалось загрузить {name}: {ex}")
+                    print(f"[Music] не удалось загрузить {path}: {ex}")
                 return
-        # файл не найден — тихо пропускаем
+        # TODO (твоя очередь): положи файл background.wav в  assets/sounds/music/
+        print("[Music] музыкальный файл не найден, музыка отключена")
 
     def stop_music(self):
         try:

@@ -66,7 +66,16 @@ class TileMap:
         2. Не на месте базы
         3. Имеет хотя бы одного соседа на дороге
         4. Находится в пределах сетки
+        5. НЕ является одним из четырёх внешних углов сетки
         """
+        # Четыре внешних угла сетки — постановка туда запрещена
+        corner_cells = {
+            (0, 0),
+            (self.cols - 1, 0),
+            (0, self.rows - 1),
+            (self.cols - 1, self.rows - 1),
+        }
+
         plantable = set()
         for (c, r) in self.road_tiles:
             for dc, dr in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
@@ -74,7 +83,8 @@ class TileMap:
                 nc, nr = nb
                 if (0 <= nc < self.cols and 0 <= nr < self.rows
                         and nb not in self.road_tiles
-                        and nb != self.base_pos):
+                        and nb != self.base_pos
+                        and nb not in corner_cells):   # углы исключены
                     plantable.add(nb)
         return plantable
 
