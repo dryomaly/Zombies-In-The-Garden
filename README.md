@@ -1,6 +1,6 @@
-# Zombies in the Garden 🌱🧟
+# Zombies in the Garden 🌱
 
-Tower Defense в стиле Plants vs. Zombies — учебный проект по курсу ПАИ, УрФУ 2026.
+Tower Defense в стиле Plants vs. Zombies — учебный проект.
 
 ## Описание
 
