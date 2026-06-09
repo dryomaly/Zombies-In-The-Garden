@@ -206,14 +206,28 @@ class Renderer:
             if hovered or sel:
                 tooltip_ptype = ptype
 
-        if tooltip_ptype:
-            self._draw_tooltip(screen, tooltip_ptype, mx)
+        # Показываем тултип только если выбрано растение (selected_plant).
+        # При отмене выбора (selected_plant is None) тултип скрывается.
+        # Позиция тултипа привязана к центру карточки выбранного растения,
+        # а НЕ к курсору мыши — плашка стоит над карточкой и не ёрзает.
+        active_tooltip = model.selected_plant if model.selected_plant else tooltip_ptype
+        if active_tooltip:
+            # Вычисляем центр X карточки активного растения
+            idx = ptypes.index(active_tooltip)
+            card_cx = 10 + idx * (card_w + 10) + card_w // 2
+            self._draw_tooltip(screen, active_tooltip, card_cx)
 
-    def _draw_tooltip(self, screen, ptype, mouse_x):
+    def _draw_tooltip(self, screen, ptype, anchor_x):
+        """
+        Рисует плашку с информацией об растении.
+        anchor_x — центр X карточки, к которой привязан тултип.
+        Тултип всегда остаётся над своей карточкой, независимо от курсора.
+        """
         lines = _TOOLTIPS[ptype]
         pad, lh, tip_w = 8, 18, 290
         tip_h = len(lines)*lh + pad*2
-        tip_x = min(max(0, mouse_x - tip_w//2), SCREEN_W - tip_w)
+        # Центрируем тултип по X карточки, не даём вылезти за экран
+        tip_x = min(max(0, anchor_x - tip_w // 2), SCREEN_W - tip_w)
         tip_y = SHOP_Y - tip_h - 6
         pygame.draw.rect(screen, (18, 44, 10), (tip_x, tip_y, tip_w, tip_h), border_radius=6)
         pygame.draw.rect(screen, (80, 150, 40), (tip_x, tip_y, tip_w, tip_h), 1, border_radius=6)
