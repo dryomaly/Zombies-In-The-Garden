@@ -1,0 +1,24 @@
+{
+  "name": "Уровень 3: Лабиринт",
+  "spawn": [0, 4],
+  "base_pos": [17, 2],
+  "waypoints": [
+    [0,  4],
+    [3,  4],
+    [3,  1],
+    [9,  1],
+    [9,  6],
+    [14, 6],
+    [14, 2],
+    [17, 2]
+  ],
+  "waves": [
+    [{"type": "normal", "count": 10, "weight": 1.0}],
+    [{"type": "normal", "count": 8,  "weight": 1.5},
+     {"type": "fast",   "count": 6,  "weight": 1.0}],
+    [{"type": "normal", "count": 6,  "weight": 1.0},
+     {"type": "fast",   "count": 10, "weight": 1.5}],
+    [{"type": "normal", "count": 15, "weight": 1.0},
+     {"type": "fast",   "count": 8,  "weight": 2.0}]
+  ]
+}
